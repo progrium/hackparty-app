@@ -1,12 +1,16 @@
 <html>
   <body>
-    <form action="/register" method="POST">
+    <form action="/complete_register/{{ guid }}" method="POST">
         <h1>Welcome {{ email }}.</h1>
 
         <label for="fname">First Name</label>
             <input type="text" id="fname" name="fname">
         <label for="lname">Last Name</label>
             <input type="text" id="lname" name="lname">
+        <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+        <label for="password">Password AGAIN</label>
+            <input type="password2" id="password2" name="password2">
 
         <button type="submit">submit</button>
 
