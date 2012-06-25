@@ -90,4 +90,4 @@ def hello_world():
 @app.route('/users')
 def users():
     d = get_app_domain()
-    return json.dumps(d.groups.all())
+    return json.dumps(d.email.get_forwarding('jeff.lindsay'))
