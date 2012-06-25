@@ -1,13 +1,14 @@
 <html>
   <body>
-    <form action="" method="">
+    <form action="/register" method="POST">
+        <h1>Welcome {{ email }}.</h1>
+
         <label for="fname">First Name</label>
             <input type="text" id="fname" name="fname">
         <label for="lname">Last Name</label>
             <input type="text" id="lname" name="lname">
-        <label for="email">Email Address</label>
-            <input type="text" id="email" name="email">
-        <button>submit</button>
+
+        <button type="submit">submit</button>
 
         #from this we make firstname.lastname user account
     </form>
