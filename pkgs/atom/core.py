@@ -34,6 +34,11 @@ except ImportError:
       from elementtree import ElementTree
 
 
+try:
+    from xml.dom.minidom import parseString as xmlString
+except ImportError:
+    xmlString = None
+
 STRING_ENCODING = 'utf-8'
 
 
@@ -341,10 +346,16 @@ class XmlElement(object):
       else:
         tree.text = self.text.decode(encoding)
 
-  def to_string(self, version=1, encoding=None):
+  def to_string(self, version=1, encoding=None, pretty_print=None):
     """Converts this object to XML."""
-    return ElementTree.tostring(self._to_tree(version, encoding))
 
+    tree_string = ElementTree.tostring(self._to_tree(version, encoding))
+
+    if pretty_print and xmlString is not None:
+        return xmlString(tree_string).toprettyxml()
+ 
+    return tree_string
+ 
   ToString = to_string
 
   def __str__(self):
@@ -379,7 +390,9 @@ class XmlElement(object):
 
   def _get_tag(self, version=1):
     qname = _get_qname(self, version)
-    return qname[qname.find('}')+1:]
+    if qname:
+      return qname[qname.find('}')+1:]
+    return None
 
   def _get_namespace(self, version=1):
     qname = _get_qname(self, version)
@@ -396,23 +409,26 @@ class XmlElement(object):
       else:
         self._qname[0] = tag
     else:
-      if self._qname.startswith('{'):
+      if self._qname is not None and self._qname.startswith('{'):
         self._qname = '{%s}%s' % (self._get_namespace(), tag)
       else:
         self._qname = tag
 
   def _set_namespace(self, namespace):
+    tag = self._get_tag(1)
+    if tag is None:
+      tag = ''
     if isinstance(self._qname, tuple):
       self._qname = self._qname.copy()
       if namespace:
-         self._qname[0] = '{%s}%s' % (namespace, self._get_tag(1))
+         self._qname[0] = '{%s}%s' % (namespace, tag)
       else:
-         self._qname[0] = self._get_tag(1)
+         self._qname[0] = tag
     else:
       if namespace:
-         self._qname = '{%s}%s' % (namespace, self._get_tag(1))
+         self._qname = '{%s}%s' % (namespace, tag)
       else:
-         self._qname = self._get_tag(1)
+         self._qname = tag
 
   tag = property(_get_tag, _set_tag,
       """Provides backwards compatibility for v1 atom.AtomBase classes.""")

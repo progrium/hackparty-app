@@ -2,8 +2,9 @@
 # Pulled from my work on hackerdojo/hd-domain on GitHub.
 # Eventually could be a generic library
 
-import gdata.apps.service
-import gdata.apps.groups.service
+import gdata.apps.client
+import gdata.apps.emailsettings.client
+import gdata.apps.groups.client
 
 def _user(self, user):
     return {
@@ -26,17 +27,28 @@ def flatten(l):
 class Domain(object):
     def __init__(self, name, username, password):
         self.name = name
+        self.source = 'hackparty'
         self.username = username
         self.password = password
         self.users = DomainUsers(self)
         self.groups = DomainGroups(self)
+        self.email = DomainEmail(self)
+
+class DomainEmail(object):
+    def __init__(self, domain):
+        self.domain = domain
+        self.client = gdata.apps.emailsettings.client.EmailSettingsClient(domain=domain.name)
+        self.client.ClientLogin(domain.username, domain.password, domain.source)
+
+    def get_forwarding(self, username):
+        return self.client.RetrieveForwarding(username)
 
 class DomainGroups(object):
     def __init__(self, domain):
         self.domain = domain
-        self.client = gdata.apps.groups.service.GroupsService(domain=domain.name)
+        self.client = gdata.apps.groups.client.GroupsProvisioningClient(domain=domain.name)
         #self.groups_client.SetClientLoginToken(token)
-        self.client.ClientLogin(domain.username, domain.password)
+        self.client.ClientLogin(domain.username, domain.password, domain.source)
 
     def all(self):
         return [g['groupId'].split('@')[0] for g in self.client.RetrieveAllGroups()]
@@ -49,8 +61,8 @@ class DomainGroups(object):
 class DomainUsers(object):
     def __init__(self, domain):
         self.domain = domain
-        self.client = gdata.apps.service.AppsService(domain=domain.name)
-        self.client.ClientLogin(domain.username, domain.password)
+        self.client = gdata.apps.client.AppsClient(domain=domain.name)
+        self.client.ClientLogin(domain.username, domain.password, domain.source)
         #self.apps_client.SetClientLoginToken(token)
 
     def all(self, include_suspended=False):

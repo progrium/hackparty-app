@@ -63,7 +63,7 @@ class AtomService(object):
 
   # Default values for members
   port = 80
-  ssl = False
+  ssl = False 
   # Set the current_token to force the AtomService to use this token
   # instead of searching for an appropriate token in the token_store.
   current_token = None
@@ -426,7 +426,7 @@ def PrepareConnection(service, full_uri):
        
       p_status=response.split()[1]
       if p_status!=str(200):
-        raise 'Error status=',str(p_status)
+        raise atom.http.ProxyError('Error status=%s' % p_status)
 
       # Trivial setup for ssl socket.
       ssl = socket.ssl(p_sock, None, None)

@@ -13,4 +13,4 @@ def hello_world():
 @app.route('/users')
 def users():
     d = Domain("hackparty.org", "jeff.lindsay@hackparty.org", memcache.get("domain_pass"))
-    return json.dumps(d.groups.all())
+    return json.dumps(d.email.get_forwarding('jeff.lindsay'))
