@@ -12,7 +12,7 @@ for filename in os.listdir(package_dir_path):
     if filename.endswith((".zip", ".egg")):
         sys.path.insert(0, "%s/%s" % (package_dir_path, filename))
 
-from app import app
+from hackparty import app
 
 def main():
     from google.appengine.ext.webapp.util import run_wsgi_app
