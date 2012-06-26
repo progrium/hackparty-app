@@ -11,7 +11,8 @@ import json
 import uuid
 
 def get_app_domain():
-    d = Domain("hackparty.org", "jeff.lindsay@hackparty.org", memcache.get("domain_pass"))
+    # To configure this, go to http://localhost:8080/_ah/admin/memcache and set the password there
+    d = Domain("hackparty.org", "api@hackparty.org", memcache.get("domain_pass"))
     return d
 
 @app.route('/preregistration', methods=['GET', 'POST'])
