@@ -6,13 +6,36 @@ from google.appengine.api import mail
 
 from flask import render_template, request
 from flask import url_for
-import json
 
 import uuid
+import urllib
+import obfuscate
+import json
+
+my_base_url = 'http://bob.fihn.net:8080'
 
 def get_app_domain():
-    d = Domain("hackparty.org", "jeff.lindsay@hackparty.org", memcache.get("domain_pass"))
+    # To configure this, go to /_ah/admin/memcache and set the password for 'domain_pass' there
+    d = Domain("hackparty.org", "api@hackparty.org", memcache.get("domain_pass"))
     return d
+
+@app.route('/create', methods=['GET', 'POST'])
+def create():
+    # This is encoded into the URL ...
+    data = {
+        'es': 'Hack Party', # EventSeries
+        'e': '0' # EventID
+        }
+    encoded = obfuscate.encode(json.dumps(data))
+    url = my_base_url + '/r/' + encoded
+    encoded_url = urllib.quote_plus(url)
+    return render_template('create.html', encoded_url=encoded_url, url=url)
+
+@app.route('/r/<data>', methods=['GET'])
+def r(data):
+    json_string = obfuscate.decode(data)
+    url_data = json.loads(json_string)
+    return render_template('test.html', guid='none', email='none', input=json_string, url_data=url_data)
 
 @app.route('/preregistration', methods=['GET', 'POST'])
 def preregistration():
